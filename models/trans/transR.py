@@ -21,7 +21,12 @@ class TransE():
                                                initializer=tf.contrib.layers.xavier_initializer(uniform=False))
 
     def loss(self, h, t, r):
-        h_e = tf.nn.embedding_lookup(self.ent_embeddings, h)
-        t_e = tf.nn.embedding_lookup(self.ent_embeddings, t)
-        r_e = tf.nn.embedding_lookup(self.rel_embeddings, r)
-        proj_e = tf.nn.embedding_lookup(self.proj_embeddings, r)
+        h_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, h), [-1, self.ent_size, 1])
+        t_e = tf.reshape(tf.nn.embedding_lookup(self.ent_embeddings, t), [-1, self.ent_size, 1])
+        r_e = tf.reshape(tf.nn.embedding_lookup(self.rel_embeddings, r), [-1, self.rel_size])
+        proj_e = tf.reshape(tf.nn.embedding_lookup(self.proj_embeddings, r), [-1, self.rel_size, self.ent_size])
+
+        proj_h_e = tf.reshape(tf.matmul(proj_e, h_e), [-1, self.rel_size])
+        proj_t_e = tf.reshape(tf.matmul(proj_e, t_e), [-1, self.rel_size])
+        loss = tf.reduce_sum(tf.abs(proj_h_e + r_e - proj_t_e))
+        return loss
