@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-class TransD():
+class TransD(object):
     def __init__(self,
                  embedding_size,
                  ent_total,
@@ -21,7 +21,7 @@ class TransD():
                                                    shape=[self.rel_total, self.embedding_size],
                                                    initializer=tf.contrib.layers.xavier_initializer(uniform=False))
 
-    def loss(self, h, t, r):
+    def forward(self, h, t, r):
         h_e = tf.nn.embedding_lookup(self.ent_embeddings, h)
         t_e = tf.nn.embedding_lookup(self.ent_embeddings, t)
         r_e = tf.nn.embedding_lookup(self.rel_embeddings, r)
@@ -31,8 +31,8 @@ class TransD():
 
         proj_h_e = _projection_transH(h_e, h_proj, r_proj)
         proj_t_e = _projection_transH(t_e, t_proj, r_proj)
-        loss = tf.reduce_sum(tf.abs(proj_h_e + r_e - proj_t_e))
-        return loss
+        score = tf.reduce_sum(tf.abs(proj_h_e + r_e - proj_t_e))
+        return score
 
 
 def _projection_transH(e, proj, r_proj):
