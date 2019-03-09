@@ -23,3 +23,11 @@ class TransE():
         r_e = tf.nn.embedding_lookup(self.rel_embeddings, r)
         norm_e = tf.nn.embedding_lookup(self.norm_embeddings, r)
 
+        proj_t_e = _projection_transH(t_e, norm_e)
+        proj_h_e = _projection_transH(h_e, norm_e)
+        loss = tf.reduce_sum(tf.abs(proj_h_e + r_e - proj_t_e))
+        return loss
+
+
+def _projection_transH(original, norm):
+    return original - tf.reduce_sum(original * norm, 1, keepdims=True) * norm

@@ -28,3 +28,12 @@ class TransD():
         h_proj = tf.nn.embedding_lookup(self.ent_proj_embeddings, h)
         t_proj = tf.nn.embedding_lookup(self.ent_proj_embeddings, t)
         r_proj = tf.nn.embedding_lookup(self.rel_proj_embeddings, r)
+
+        proj_h_e = _projection_transH(h_e, h_proj, r_proj)
+        proj_t_e = _projection_transH(t_e, t_proj, r_proj)
+        loss = tf.reduce_sum(tf.abs(proj_h_e + r_e - proj_t_e))
+        return loss
+
+
+def _projection_transH(e, proj, r_proj):
+    return tf.nn.l2_normalize(e + tf.reduce_sum(e * proj, 1, keep_dims=True) * r_proj, -1)
