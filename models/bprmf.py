@@ -21,3 +21,9 @@ class BPRMF(object):
 
         score = tf.reduce_sum(tf.multiply(u_e, i_e), 1)
         return score
+
+    def evaluate(self, u_ids):
+        u_e = tf.nn.embedding_lookup(self.user_embeddings, u_ids)
+
+        return tf.matmul(u_e, self.item_embeddings, transpose_b=True)
+

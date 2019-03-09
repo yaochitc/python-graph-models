@@ -10,7 +10,10 @@ def load_rating(rating_file, min_rating=0):
         rating_np = np.loadtxt(rating_file + '.txt', dtype=np.int32)
         np.save(rating_file + '.npy', rating_np)
     idx = np.where(rating_np[:, 2] > min_rating)[0]
-    return rating_np[idx][:, [0, 1]]
+
+    n_user = len(set(rating_np[:, 0]))
+    n_item = len(set(rating_np[:, 1]))
+    return n_user, n_item, rating_np[idx][:, [0, 1]]
 
 
 def load_kg(kg_file):
